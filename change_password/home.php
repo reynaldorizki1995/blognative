@@ -1,0 +1,80 @@
+<?php
+	session_start();
+
+	//redirect ot login page if not logged in
+	// if(!isset($_SESSION['user'])){
+	// 	header('location:index.php');
+	// 	exit();
+	// }
+
+	//connection
+	$conn = new mysqli('localhost', 'root', '', 'blog');
+
+	//get user details
+	$sql = "SELECT * FROM users WHERE id = '".$_SESSION['id']."'";
+	$query = $conn->query($sql);
+	$row = $query->fetch_assoc();
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>How to Change Password using PHP</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+	<h1 class="page-header text-center">Change Password for <?php echo $row['username']; ?></h1>
+	<div class="row">
+		<div class="col-sm-4 col-sm-offset-4 panel panel-default" style="padding:20px;">
+			<h3>Welcome, <?php echo $row['username']; ?>
+				<span class="pull-right">
+					<a href="logout.php" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+				</span>
+			</h3>
+			<hr>
+			<form method="POST" action="change_password.php">
+				<div class="form-group">
+					<label for="old">Old Password:</label>
+					<input type="password" name="old" id="old" class="form-control" value="<?php echo (isset($_SESSION['old'])) ? $_SESSION['old'] : ''; ?>">
+				</div>
+				<div class="form-group">
+					<label for="new">New Password:</label>
+					<input type="password" name="new" id="new" class="form-control" value="<?php echo (isset($_SESSION['new'])) ? $_SESSION['new'] : ''; ?>">
+				</div>
+				<div class="form-group">
+					<label for="retype">Retype New Password:</label>
+					<input type="password" name="retype" id="retype" class="form-control" value="<?php echo (isset($_SESSION['retype'])) ? $_SESSION['retype'] : ''; ?>">
+					<input type="hidden" name="level" value="user" id="level" class="form-control" value="<?php echo (isset($_SESSION['level'])) ? $_SESSION['level'] : ''; ?>">
+				</div>
+				<button type="submit" name="update" class="btn btn-success"><span class="glyphicon glyphicon-check"></span> Update</button>
+			</form>
+			<?php
+				if(isset($_SESSION['error'])){
+					?>
+					<div class="alert alert-danger text-center" style="margin-top:20px;">
+						<?php echo $_SESSION['error']; ?>
+					</div>
+					<?php
+
+					unset($_SESSION['error']);
+				}
+				if(isset($_SESSION['success'])){
+					?>
+					<div class="alert alert-success text-center" style="margin-top:20px;">
+						<?php echo $_SESSION['success']; 
+							header("location: ../index.php")
+						?>
+						
+					</div>
+					<?php
+
+					unset($_SESSION['success']);
+				}
+			?>
+		</div>
+	</div>
+</div>
+</body>
+</html>
